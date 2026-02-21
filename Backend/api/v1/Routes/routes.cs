@@ -18,27 +18,7 @@ public static class Routes
     // ----------------------------
     // LEADS (CRUD + search + scoring)
     // ----------------------------
-    public static void MapLeadRoutes(this IEndpointRouteBuilder app)
-    {
-        var leads = app.MapGroup("/api/v1/leads");
-
-        // GET
-        leads.MapGet("", GetLeadsHandler);                          // list (support query params: search, company, minFitScore, page, pageSize)
-        leads.MapGet("/{id:guid}", GetLeadByIdHandler);             // lead details
-        leads.MapGet("/{id:guid}/timeline", GetLeadTimelineHandler);// lead’s interactions + tasks + deals
-        leads.MapGet("/search", SearchLeadsHandler);                // quick search endpoint
-
-        // POST
-        leads.MapPost("", CreateLeadHandler);                       // create lead
-        leads.MapPost("/bulk", BulkCreateLeadsHandler);             // optional: bulk import
-
-        // PATCH/PUT
-        leads.MapPatch("/{id:guid}", UpdateLeadHandler);            // update fields
-        leads.MapPatch("/{id:guid}/fit-score", UpdateLeadFitScoreHandler); // update fit score
-
-        // DELETE
-        leads.MapDelete("/{id:guid}", DeleteLeadHandler);           // delete lead (or soft delete)
-    }
+   
 
     // ----------------------------
     // DEALS / PIPELINE (CRUD + stage transitions + value)
@@ -144,7 +124,7 @@ public static class Routes
     public static void MapIntegrationRoutes(this IEndpointRouteBuilder app)
     {
         var integrations = app.MapGroup("/api/v1/integrations");
-
+    
         // Calendly webhooks: meeting booked/cancelled
         integrations.MapPost("/calendly/webhook", CalendlyWebhookHandler);
 
@@ -162,66 +142,210 @@ public static class Routes
 
     // ============================================================
     // HANDLER PLACEHOLDERS (add your actual implementations)
-    // ============================================================
+    // ============================================================   
 
-    // Leads
-    private static IResult GetLeadsHandler() => Results.NotImplemented();
-    private static IResult GetLeadByIdHandler(Guid id) => Results.NotImplemented();
-    private static IResult GetLeadTimelineHandler(Guid id) => Results.NotImplemented();
-    private static IResult SearchLeadsHandler(string q) => Results.NotImplemented();
-    private static IResult CreateLeadHandler() => Results.NotImplemented();
-    private static IResult BulkCreateLeadsHandler() => Results.NotImplemented();
-    private static IResult UpdateLeadHandler(Guid id) => Results.NotImplemented();
-    private static IResult UpdateLeadFitScoreHandler(Guid id) => Results.NotImplemented();
-    private static IResult DeleteLeadHandler(Guid id) => Results.NotImplemented();
+   // Deals
+    private static IResult GetDealsHandler()
+    {
+        return Results.StatusCode(StatusCodes.Status501NotImplemented);
+    }
 
-    // Deals
-    private static IResult GetDealsHandler() => Results.NotImplemented();
-    private static IResult GetDealByIdHandler(Guid id) => Results.NotImplemented();
-    private static IResult GetDealsByLeadHandler(Guid leadId) => Results.NotImplemented();
-    private static IResult CreateDealHandler() => Results.NotImplemented();
-    private static IResult UpdateDealHandler(Guid id) => Results.NotImplemented();
-    private static IResult UpdateDealStageHandler(Guid id) => Results.NotImplemented();
-    private static IResult UpdateNextActionDateHandler(Guid id) => Results.NotImplemented();
-    private static IResult DeleteDealHandler(Guid id) => Results.NotImplemented();
+    private static IResult GetDealByIdHandler(Guid id)
+    {
+        return Results.StatusCode(StatusCodes.Status501NotImplemented);
+    }
+
+    private static IResult GetDealsByLeadHandler(Guid leadId)
+    {
+        return Results.StatusCode(StatusCodes.Status501NotImplemented);
+    }
+
+    private static IResult CreateDealHandler()
+    {
+        return Results.StatusCode(StatusCodes.Status501NotImplemented);
+    }
+
+    private static IResult UpdateDealHandler(Guid id)
+    {
+        return Results.StatusCode(StatusCodes.Status501NotImplemented);
+    }
+
+    private static IResult UpdateDealStageHandler(Guid id)
+    {
+        return Results.StatusCode(StatusCodes.Status501NotImplemented);
+    }
+
+    private static IResult UpdateNextActionDateHandler(Guid id)
+    {
+        return Results.StatusCode(StatusCodes.Status501NotImplemented);
+    }
+
+    private static IResult DeleteDealHandler(Guid id)
+    {
+        return Results.StatusCode(StatusCodes.Status501NotImplemented);
+    }
 
     // Interactions
-    private static IResult GetInteractionsHandler() => Results.NotImplemented();
-    private static IResult GetInteractionByIdHandler(Guid id) => Results.NotImplemented();
-    private static IResult GetInteractionsByLeadHandler(Guid leadId) => Results.NotImplemented();
-    private static IResult CreateInteractionHandler() => Results.NotImplemented();
-    private static IResult AttachTranscriptHandler(Guid id) => Results.NotImplemented();
-    private static IResult UpdateInteractionHandler(Guid id) => Results.NotImplemented();
-    private static IResult DeleteInteractionHandler(Guid id) => Results.NotImplemented();
+    private static IResult GetInteractionsHandler()
+    {
+        return Results.StatusCode(StatusCodes.Status501NotImplemented);
+    }
+
+    private static IResult GetInteractionByIdHandler(Guid id)
+    {
+        return Results.StatusCode(StatusCodes.Status501NotImplemented);
+    }
+
+    private static IResult GetInteractionsByLeadHandler(Guid leadId)
+    {
+        return Results.StatusCode(StatusCodes.Status501NotImplemented);
+    }
+
+    private static IResult CreateInteractionHandler()
+    {
+        return Results.StatusCode(StatusCodes.Status501NotImplemented);
+    }
+
+    private static IResult AttachTranscriptHandler(Guid id)
+    {
+        return Results.StatusCode(StatusCodes.Status501NotImplemented);
+    }
+
+    private static IResult UpdateInteractionHandler(Guid id)
+    {
+        return Results.StatusCode(StatusCodes.Status501NotImplemented);
+    }
+
+    private static IResult DeleteInteractionHandler(Guid id)
+    {
+        return Results.StatusCode(StatusCodes.Status501NotImplemented);
+    }
 
     // Tasks
-    private static IResult GetTasksHandler() => Results.NotImplemented();
-    private static IResult GetTaskByIdHandler(Guid id) => Results.NotImplemented();
-    private static IResult GetTasksByLeadHandler(Guid leadId) => Results.NotImplemented();
-    private static IResult GetTasksDueTodayHandler() => Results.NotImplemented();
-    private static IResult GetOverdueTasksHandler() => Results.NotImplemented();
-    private static IResult CreateTaskHandler() => Results.NotImplemented();
-    private static IResult ScheduleAfterDemoFollowUpsHandler(Guid leadId) => Results.NotImplemented();
-    private static IResult UpdateTaskHandler(Guid id) => Results.NotImplemented();
-    private static IResult MarkTaskCompleteHandler(Guid id) => Results.NotImplemented();
-    private static IResult ReopenTaskHandler(Guid id) => Results.NotImplemented();
-    private static IResult DeleteTaskHandler(Guid id) => Results.NotImplemented();
+    private static IResult GetTasksHandler()
+    {
+        return Results.StatusCode(StatusCodes.Status501NotImplemented);
+    }
+
+    private static IResult GetTaskByIdHandler(Guid id)
+    {
+        return Results.StatusCode(StatusCodes.Status501NotImplemented);
+    }
+
+    private static IResult GetTasksByLeadHandler(Guid leadId)
+    {
+        return Results.StatusCode(StatusCodes.Status501NotImplemented);
+    }
+
+    private static IResult GetTasksDueTodayHandler()
+    {
+        return Results.StatusCode(StatusCodes.Status501NotImplemented);
+    }
+
+    private static IResult GetOverdueTasksHandler()
+    {
+        return Results.StatusCode(StatusCodes.Status501NotImplemented);
+    }
+
+    private static IResult CreateTaskHandler()
+    {
+        return Results.StatusCode(StatusCodes.Status501NotImplemented);
+    }
+
+    private static IResult ScheduleAfterDemoFollowUpsHandler(Guid leadId)
+    {
+        return Results.StatusCode(StatusCodes.Status501NotImplemented);
+    }
+
+    private static IResult UpdateTaskHandler(Guid id)
+    {
+        return Results.StatusCode(StatusCodes.Status501NotImplemented);
+    }
+
+    private static IResult MarkTaskCompleteHandler(Guid id)
+    {
+        return Results.StatusCode(StatusCodes.Status501NotImplemented);
+    }
+
+    private static IResult ReopenTaskHandler(Guid id)
+    {
+        return Results.StatusCode(StatusCodes.Status501NotImplemented);
+    }
+
+    private static IResult DeleteTaskHandler(Guid id)
+    {
+        return Results.StatusCode(StatusCodes.Status501NotImplemented);
+    }
 
     // AI
-    private static IResult ResearchLeadHandler() => Results.NotImplemented();
-    private static IResult DiscoverLeadsHandler() => Results.NotImplemented();
-    private static IResult DraftColdEmailHandler() => Results.NotImplemented();
-    private static IResult DraftLinkedInMessageHandler() => Results.NotImplemented();
-    private static IResult DraftFollowUpHandler() => Results.NotImplemented();
-    private static IResult AnalyzeTranscriptHandler() => Results.NotImplemented();
-    private static IResult EstimateDealValueHandler() => Results.NotImplemented();
-    private static IResult RecommendNextActionsHandler(Guid leadId) => Results.NotImplemented();
+    private static IResult ResearchLeadHandler()
+    {
+        return Results.StatusCode(StatusCodes.Status501NotImplemented);
+    }
+
+    private static IResult DiscoverLeadsHandler()
+    {
+        return Results.StatusCode(StatusCodes.Status501NotImplemented);
+    }
+
+    private static IResult DraftColdEmailHandler()
+    {
+        return Results.StatusCode(StatusCodes.Status501NotImplemented);
+    }
+
+    private static IResult DraftLinkedInMessageHandler()
+    {
+        return Results.StatusCode(StatusCodes.Status501NotImplemented);
+    }
+
+    private static IResult DraftFollowUpHandler()
+    {
+        return Results.StatusCode(StatusCodes.Status501NotImplemented);
+    }
+
+    private static IResult AnalyzeTranscriptHandler()
+    {
+        return Results.StatusCode(StatusCodes.Status501NotImplemented);
+    }
+
+    private static IResult EstimateDealValueHandler()
+    {
+        return Results.StatusCode(StatusCodes.Status501NotImplemented);
+    }
+
+    private static IResult RecommendNextActionsHandler(Guid leadId)
+    {
+        return Results.StatusCode(StatusCodes.Status501NotImplemented);
+    }
 
     // Integrations
-    private static IResult CalendlyWebhookHandler() => Results.NotImplemented();
-    private static IResult TwilioVoiceStatusWebhookHandler() => Results.NotImplemented();
-    private static IResult TwilioRecordingWebhookHandler() => Results.NotImplemented();
-    private static IResult TriggerReminderCallHandler(Guid leadId) => Results.NotImplemented();
-    private static IResult TriggerVoicemailDropHandler(Guid leadId) => Results.NotImplemented();
-    private static IResult EmailWebhookHandler() => Results.NotImplemented();
+    private static IResult CalendlyWebhookHandler()
+    {
+        return Results.StatusCode(StatusCodes.Status501NotImplemented);
+    }
+
+    private static IResult TwilioVoiceStatusWebhookHandler()
+    {
+        return Results.StatusCode(StatusCodes.Status501NotImplemented);
+    }
+
+    private static IResult TwilioRecordingWebhookHandler()
+    {
+        return Results.StatusCode(StatusCodes.Status501NotImplemented);
+    }
+
+    private static IResult TriggerReminderCallHandler(Guid leadId)
+    {
+        return Results.StatusCode(StatusCodes.Status501NotImplemented);
+    }
+
+    private static IResult TriggerVoicemailDropHandler(Guid leadId)
+    {
+        return Results.StatusCode(StatusCodes.Status501NotImplemented);
+    }
+
+    private static IResult EmailWebhookHandler()
+    {
+        return Results.StatusCode(StatusCodes.Status501NotImplemented);
+    }
 }
