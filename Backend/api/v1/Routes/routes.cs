@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
+using Npgsql;
+using Microsoft.AspNetCore.Http;
 
 namespace api.v1.Routes;
 
@@ -169,7 +171,40 @@ public static class Routes
     // ============================================================
 
     // Leads
-    private static IResult GetLeadsHandler() => Results.NotImplemented();
+    private static async Task<IResult> GetLeadsHandler(){
+
+    var config = new ConfigurationBuilder()
+        .AddJsonFile("appsettings.json", optional: false)
+        .Build();
+
+    var connString = config.GetConnectionString("Db");
+
+    const string sql = "SELECT * FROM leads";
+
+    await using var conn = new NpgsqlConnection(connString);
+    await conn.OpenAsync();
+
+    await using var cmd = new NpgsqlCommand(sql, conn);
+    await using var reader = await cmd.ExecuteReaderAsync();
+
+    var results = new List<Dictionary<string, object?>>();
+
+    while (await reader.ReadAsync())
+    {
+        var row = new Dictionary<string, object?>();
+
+        for (int i = 0; i < reader.FieldCount; i++)
+        {
+            row[reader.GetName(i)] =
+                await reader.IsDBNullAsync(i) ? null : reader.GetValue(i);
+        }
+
+        results.Add(row);
+    }
+
+    return Results.Ok(results);
+}
+
     private static IResult GetLeadByIdHandler(Guid id) => Results.NotImplemented();
     private static IResult GetLeadTimelineHandler(Guid id) => Results.NotImplemented();
     private static IResult SearchLeadsHandler(string q) => Results.NotImplemented();
