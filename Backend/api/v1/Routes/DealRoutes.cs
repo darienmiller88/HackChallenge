@@ -35,7 +35,7 @@ public static class DealRoutes
         return Results.Ok(deals);
     }
 
-    private static IResult GetDealByIdHandler(Guid id)
+    private static IResult GetDealByIdHandler(int id)
     {
         return Results.StatusCode(StatusCodes.Status501NotImplemented);
     }

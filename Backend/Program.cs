@@ -31,7 +31,7 @@ builder.Services.AddSingleton<IDbConnection>(sp =>
 //Add cors for front end
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy(corsOrigin,
+    options.AddPolicy("AllowAll",
         policy =>
         {
             policy.AllowAnyOrigin()
@@ -45,10 +45,11 @@ builder.Services.AddCors(options =>
 
 builder.Services.AddScoped<LeadRepository>();
 builder.Services.AddScoped<InteractionRepository>();
+builder.Services.AddScoped<DealRepository>();
 
 var app = builder.Build();
 
-app.UseCors(corsOrigin);
+app.UseCors("AllowAll");
 app.Use(async (context, next) =>
 {
     Stopwatch stopwatch = Stopwatch.StartNew();
