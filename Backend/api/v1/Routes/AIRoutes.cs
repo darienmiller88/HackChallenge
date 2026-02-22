@@ -1,3 +1,8 @@
+using Backend.Models;
+using GenerativeAI;
+using Microsoft.Extensions.Configuration;
+using System.Text.Json;
+
 namespace api.v1.Routes;
 
 public static class AiRoutes{
@@ -54,9 +59,52 @@ public static class AiRoutes{
     }
 
     // Call / meeting analysis
-    private static IResult AnalyzeTranscriptHandler()
+    private static async Task<IResult> AnalyzeTranscriptHandler(TranscriptRequest req)
     {
-        return Results.StatusCode(StatusCodes.Status501NotImplemented);
+        if (string.IsNullOrWhiteSpace(req.Transcript))
+            return Results.BadRequest("Transcript required");
+
+        // config
+        var config = new ConfigurationBuilder()
+            .AddJsonFile("appsettings.json")
+            .Build();
+
+        var apiKey = config["Gemini:ApiKey"];
+
+        var model = new GenerativeModel(apiKey, "gemini-1.5-flash");
+        
+        var prompt = $$"""
+    You are a sales conversation analyzer.
+
+    Analyze this transcript and return ONLY valid JSON with this schema:
+
+    {"sentiment": "positive | neutral | negative",
+    "objections": ["list of objections"],
+    "next_steps": ["recommended next steps"]
+    }
+
+    Transcript:
+    {{req.Transcript}}
+    """;
+
+        var response = await model.GenerateContentAsync(prompt);
+
+        var text = response.Text();
+
+        // try parse JSON safely
+        try
+        {
+            var parsed = JsonSerializer.Deserialize<object>(text);
+            return Results.Ok(parsed);
+        }
+        catch
+        {
+            // fallback if Gemini adds extra text
+            return Results.Ok(new
+            {
+                raw = text
+            });
+        }
     }
 
     private static IResult EstimateDealValueHandler()
