@@ -31,13 +31,12 @@ builder.Services.AddSingleton<IDbConnection>(sp =>
 //Add cors for front end
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowAll",
-        policy =>
-        {
-            policy.AllowAnyOrigin()
-                  .AllowAnyHeader()
-                  .AllowAnyMethod();
-        });
+    options.AddPolicy("AllowAll", policy =>
+    {
+        policy.AllowAnyOrigin()
+                .AllowAnyHeader()
+                .AllowAnyMethod();
+    });
 });
 
 
