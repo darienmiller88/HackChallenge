@@ -1,10 +1,5 @@
 using Backend.Repositories;
 using Backend.Models;
-
-// using GenerativeAI;
-using Microsoft.Extensions.Configuration;
-using Npgsql;
-using System.Data;
 using System.Text;
 using System.Text.Json;
 using System.Text.RegularExpressions;
@@ -25,7 +20,6 @@ public static class AiRoutes{
         ai.MapPost("/discover/leads", DiscoverLeadsHandler);         // input: ICP -> output: list of leads (optional)
 
         // Outreach drafting
-        ai.MapPost("/draft/cold-email/{leadId:int}", DraftColdEmailHandler);      // input: leadId + context -> output: subject/body
         ai.MapPost("/draft/linkedin", DraftLinkedInMessageHandler);  // input: leadId -> output: DM text
         ai.MapPost("/draft/follow-up", DraftFollowUpHandler);        // input: leadId + last interaction -> output follow-up
 
@@ -34,6 +28,7 @@ public static class AiRoutes{
         ai.MapPost("/estimate/deal-value", EstimateDealValueHandler);// input: leadId + transcript/history -> output: value_estimate + probability
 
         // Recommendations
+        ai.MapGet("/draft/cold-email/{leadId:int}", DraftColdEmailHandler);      // input: leadId + context -> output: subject/body
         ai.MapGet("/recommend/next-actions/{leadId:int}", RecommendNextActionsHandler);
     }
 
@@ -99,21 +94,21 @@ public static class AiRoutes{
         if (lead == null) return Results.NotFound();
 
         var prompt = $$"""
-    You are a B2B SDR.
+            You are a B2B SDR.
 
-    Write a short personalized cold email.
+            Write a short personalized cold email.
 
-    Return ONLY JSON:
+            Return ONLY JSON:
 
-    {
-    "subject": "",
-    "body": ""
-    }
+            {
+            "subject": "",
+            "body": ""
+            }
 
-    Lead:
-    Name: {{lead.Name}}
-    Company: {{lead.Company}}
-    """;
+            Lead:
+            Name: {{lead.Name}}
+            Company: {{lead.Company}}
+        """;
 
         var result = await CallGeminiAsync(prompt);
         return Results.Ok(result);
@@ -124,18 +119,18 @@ public static class AiRoutes{
         if (lead == null) return Results.NotFound();
 
         var prompt = $$"""
-    You are an SDR writing a concise LinkedIn DM.
+            You are an SDR writing a concise LinkedIn DM.
 
-    Return ONLY JSON:
+            Return ONLY JSON:
 
-    {
-    "message": ""
-    }
+            {
+            "message": ""
+            }
 
-    Lead:
-    Name: {{lead.Name}}
-    Company: {{lead.Company}}
-    """;
+            Lead:
+            Name: {{lead.Name}}
+            Company: {{lead.Company}}
+        """;
 
         var result = await CallGeminiAsync(prompt);
         return Results.Ok(result);
@@ -149,22 +144,22 @@ public static class AiRoutes{
         if (lead == null) return Results.NotFound("Lead not found");
 
         var prompt = $$"""
-    You are an SDR writing a follow-up message after a customer interaction.
+            You are an SDR writing a follow-up message after a customer interaction.
 
-    Return ONLY JSON:
+            Return ONLY JSON:
 
-    {
-    "message": ""
-    }
+            {
+            "message": ""
+            }
 
-    Lead:
-    Name: {{lead.Name}}
-    Company: {{lead.Company}}
+            Lead:
+            Name: {{lead.Name}}
+            Company: {{lead.Company}}
 
-    Interaction:
-    Summary: {{interaction.Summary}}
-    Transcript: {{interaction.Transcript}}
-    """;
+            Interaction:
+            Summary: {{interaction.Summary}}
+            Transcript: {{interaction.Transcript}}
+        """;
 
         var result = await CallGeminiAsync(prompt);
         return Results.Ok(result);
@@ -175,26 +170,21 @@ public static class AiRoutes{
         if (string.IsNullOrWhiteSpace(req.Transcript))
             return Results.BadRequest("Transcript required");
 
-        // config
-        var config = new ConfigurationBuilder()
-            .AddJsonFile("appsettings.json")
-            .Build();
-
         var apiKey = Environment.GetEnvironmentVariable("GEMINI_API_KEY");
         var prompt = $$"""
-    You are a sales conversation analyzer.
+            You are a sales conversation analyzer.
 
-    Return ONLY valid JSON:
+            Return ONLY valid JSON:
 
-    {
-    "sentiment": "positive | neutral | negative",
-    "objections": [],
-    "next_steps": []
-    }
+            {
+            "sentiment": "positive | neutral | negative",
+            "objections": [],
+            "next_steps": []
+            }
 
-    Transcript:
-    {{req.Transcript}}
-    """;
+            Transcript:
+            {{req.Transcript}}
+        """;
 
         var payload = new
         {
@@ -265,30 +255,26 @@ public static class AiRoutes{
         if (string.IsNullOrWhiteSpace(req.Transcript))
             return Results.BadRequest("Transcript required");
 
-        var config = new ConfigurationBuilder()
-            .AddJsonFile("appsettings.json")
-            .Build();
-
         var apiKey = Environment.GetEnvironmentVariable("GEMINI_API_KEY");
         var prompt = $$"""
-    You are a B2B SaaS deal valuation expert.
+            You are a B2B SaaS deal valuation expert.
 
-    Based ONLY on the transcript, estimate potential deal value.
+            Based ONLY on the transcript, estimate potential deal value.
 
-    If price signals are weak, infer a reasonable range from company size, urgency, and pain.
+            If price signals are weak, infer a reasonable range from company size, urgency, and pain.
 
-    Return ONLY raw JSON:
+            Return ONLY raw JSON:
 
-    {
-    "estimated_value_usd": number,
-    "value_range": "low-high",
-    "confidence": 0-1,
-    "signals_used": []
-    }
+            {
+            "estimated_value_usd": number,
+            "value_range": "low-high",
+            "confidence": 0-1,
+            "signals_used": []
+            }
 
-    Transcript:
-    {{req.Transcript}}
-    """;
+            Transcript:
+            {{req.Transcript}}
+        """;
 
         var payload = new
         {

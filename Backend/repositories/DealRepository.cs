@@ -22,8 +22,7 @@ public class DealRepository
     {
         const string query = @"
             INSERT INTO Deals (Name, Description, Amount, Status) 
-            VALUES (@Name, @Description, @Amount, @Status);
-            SELECT CAST(SCOPE_IDENTITY() as int)";
+            VALUES (@Name, @Description, @Amount, @Status)";
         
         return await _db.QuerySingleAsync<int>(query, deal);
     }

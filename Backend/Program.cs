@@ -10,6 +10,8 @@ DotNetEnv.Env.Load();
 Console.WriteLine("Started!");
 
 var builder = WebApplication.CreateBuilder(args);
+var corsOrigin = "_myAllowSpecificOrigins";
+
 
 builder.Services.AddSingleton<IDbConnection>(sp =>
 {
@@ -26,6 +28,20 @@ builder.Services.AddSingleton<IDbConnection>(sp =>
     return new NpgsqlConnection(connString);
 });
 
+//Add cors for front end
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(corsOrigin,
+        policy =>
+        {
+            policy.WithOrigins("http://localhost:3001",
+                                "http://localhost:3000")
+                  .AllowAnyHeader()
+                  .AllowAnyMethod();
+        });
+});
+
+
 //inject repositories
 
 builder.Services.AddScoped<LeadRepository>();
@@ -33,6 +49,7 @@ builder.Services.AddScoped<InteractionRepository>();
 
 var app = builder.Build();
 
+app.UseCors(corsOrigin);
 app.Use(async (context, next) =>
 {
     Stopwatch stopwatch = Stopwatch.StartNew();
@@ -41,6 +58,7 @@ app.Use(async (context, next) =>
 
     Console.WriteLine($"Request: {context.Request.Method} {context.Response.StatusCode} {context.Request.Path} {stopwatch.ElapsedMilliseconds}ms");
 });
+
 
 
 app.MapGet("/", () => "Hello World!");

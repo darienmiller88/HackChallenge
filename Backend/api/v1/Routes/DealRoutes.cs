@@ -1,3 +1,5 @@
+using Backend.Repositories;
+
 namespace api.v1.Routes;
 
 public static class DealRoutes
@@ -10,15 +12,15 @@ public static class DealRoutes
         var deals = app.MapGroup("/api/v1/deals");
 
         // GET
-        deals.MapGet("", GetDealsHandler);                          // list deals (filter by stage, leadId, date range)
-        deals.MapGet("/{id:guid}", GetDealByIdHandler);             // deal details
+        deals.MapGet("/", GetDealsHandler); // list deals (filter by stage, leadId, date range)
+        deals.MapGet("/{id:int}", GetDealByIdHandler); // deal details
         deals.MapGet("/by-lead/{leadId:guid}", GetDealsByLeadHandler);
 
         // POST
-        deals.MapPost("", CreateDealHandler);                       // create deal for a lead
+        deals.MapPost("/", CreateDealHandler); // create deal for a lead
 
         // PATCH
-        deals.MapPatch("/{id:guid}", UpdateDealHandler);            // update stage/value/probability/nextActionDate
+        deals.MapPatch("/{id:guid}", UpdateDealHandler); // update stage/value/probability/nextActionDate
         deals.MapPatch("/{id:guid}/stage", UpdateDealStageHandler); // stage transition (triggers automation rules)
         deals.MapPatch("/{id:guid}/next-action", UpdateNextActionDateHandler);
 
@@ -27,9 +29,10 @@ public static class DealRoutes
     }
 
      // GET
-    private static IResult GetDealsHandler()
+    private static IResult GetDealsHandler(DealRepository repository)
     {
-        return Results.StatusCode(StatusCodes.Status501NotImplemented);
+        var deals = repository.GetAllDeals();
+        return Results.Ok(deals);
     }
 
     private static IResult GetDealByIdHandler(Guid id)
