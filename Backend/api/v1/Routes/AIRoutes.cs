@@ -94,21 +94,21 @@ public static class AiRoutes{
         if (lead == null) return Results.NotFound();
 
         var prompt = $$"""
-    You are a B2B SDR.
+            You are a B2B SDR.
 
-    Write a short personalized cold email.
+            Write a short personalized cold email.
 
-    Return ONLY JSON:
+            Return ONLY JSON:
 
-    {
-    "subject": "",
-    "body": ""
-    }
+            {
+            "subject": "",
+            "body": ""
+            }
 
-    Lead:
-    Name: {{lead.Name}}
-    Company: {{lead.Company}}
-    """;
+            Lead:
+            Name: {{lead.Name}}
+            Company: {{lead.Company}}
+        """;
 
         var result = await CallGeminiAsync(prompt);
         return Results.Ok(result);
@@ -119,18 +119,18 @@ public static class AiRoutes{
         if (lead == null) return Results.NotFound();
 
         var prompt = $$"""
-    You are an SDR writing a concise LinkedIn DM.
+            You are an SDR writing a concise LinkedIn DM.
 
-    Return ONLY JSON:
+            Return ONLY JSON:
 
-    {
-    "message": ""
-    }
+            {
+            "message": ""
+            }
 
-    Lead:
-    Name: {{lead.Name}}
-    Company: {{lead.Company}}
-    """;
+            Lead:
+            Name: {{lead.Name}}
+            Company: {{lead.Company}}
+        """;
 
         var result = await CallGeminiAsync(prompt);
         return Results.Ok(result);
@@ -170,26 +170,21 @@ public static class AiRoutes{
         if (string.IsNullOrWhiteSpace(req.Transcript))
             return Results.BadRequest("Transcript required");
 
-        // config
-        var config = new ConfigurationBuilder()
-            .AddJsonFile("appsettings.json")
-            .Build();
-
         var apiKey = Environment.GetEnvironmentVariable("GEMINI_API_KEY");
         var prompt = $$"""
-    You are a sales conversation analyzer.
+            You are a sales conversation analyzer.
 
-    Return ONLY valid JSON:
+            Return ONLY valid JSON:
 
-    {
-    "sentiment": "positive | neutral | negative",
-    "objections": [],
-    "next_steps": []
-    }
+            {
+            "sentiment": "positive | neutral | negative",
+            "objections": [],
+            "next_steps": []
+            }
 
-    Transcript:
-    {{req.Transcript}}
-    """;
+            Transcript:
+            {{req.Transcript}}
+        """;
 
         var payload = new
         {

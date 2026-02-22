@@ -10,6 +10,8 @@ DotNetEnv.Env.Load();
 Console.WriteLine("Started!");
 
 var builder = WebApplication.CreateBuilder(args);
+var corsOrigin = "_myAllowSpecificOrigins";
+
 
 builder.Services.AddSingleton<IDbConnection>(sp =>
 {
@@ -29,7 +31,7 @@ builder.Services.AddSingleton<IDbConnection>(sp =>
 //Add cors for front end
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowAll",
+    options.AddPolicy(corsOrigin,
         policy =>
         {
             policy.AllowAnyOrigin()
@@ -55,6 +57,8 @@ app.Use(async (context, next) =>
 
     Console.WriteLine($"Request: {context.Request.Method} {context.Response.StatusCode} {context.Request.Path} {stopwatch.ElapsedMilliseconds}ms");
 });
+
+app.UseCors(corsOrigin);
 
 
 app.MapGet("/", () => "Hello World!");
