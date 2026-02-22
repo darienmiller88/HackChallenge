@@ -7,10 +7,10 @@ namespace Backend.Models
     public class Interaction
     {
         [Key]
-        public Guid Id { get; set; }
+        public int Id { get; set; }
 
         [Required]
-        public Guid LeadId { get; set; }
+        public int LeadId { get; set; }
 
         [ForeignKey(nameof(LeadId))]
         public Lead? Lead { get; set; }
@@ -23,7 +23,7 @@ namespace Backend.Models
         public string? Summary { get; set; }
 
         // e.g., -1.0 (negative) to +1.0 (positive), or 0-100
-        public double? Sentiment { get; set; }
+        public string? Sentiment { get; set; }
 
         public string? Transcript { get; set; }
 

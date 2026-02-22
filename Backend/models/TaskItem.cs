@@ -7,10 +7,10 @@ namespace Backend.Models
     public class TaskItem
     {
         [Key]
-        public Guid Id { get; set; }
+        public int Id { get; set; }
 
         [Required]
-        public Guid LeadId { get; set; }
+        public int LeadId { get; set; }
 
         [ForeignKey(nameof(LeadId))]
         public Lead? Lead { get; set; }
