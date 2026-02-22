@@ -1,7 +1,9 @@
 using Backend.Models;
 using GenerativeAI;
 using Microsoft.Extensions.Configuration;
+using System.Text;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 
 namespace api.v1.Routes;
 
@@ -59,8 +61,7 @@ public static class AiRoutes{
     }
 
     // Call / meeting analysis
-    private static async Task<IResult> AnalyzeTranscriptHandler(TranscriptRequest req)
-    {
+    private static async Task<IResult> AnalyzeTranscriptHandler(TranscriptRequest req){
         if (string.IsNullOrWhiteSpace(req.Transcript))
             return Results.BadRequest("Transcript required");
 
@@ -71,45 +72,171 @@ public static class AiRoutes{
 
         var apiKey = config["Gemini:ApiKey"];
 
-        var model = new GenerativeModel(apiKey, "gemini-1.5-flash");
-        
         var prompt = $$"""
     You are a sales conversation analyzer.
 
-    Analyze this transcript and return ONLY valid JSON with this schema:
+    Return ONLY valid JSON:
 
-    {"sentiment": "positive | neutral | negative",
-    "objections": ["list of objections"],
-    "next_steps": ["recommended next steps"]
+    {
+    "sentiment": "positive | neutral | negative",
+    "objections": [],
+    "next_steps": []
     }
 
     Transcript:
     {{req.Transcript}}
     """;
 
-        var response = await model.GenerateContentAsync(prompt);
+        var payload = new
+        {
+            contents = new[]
+            {
+                new
+                {
+                    parts = new[]
+                    {
+                        new { text = prompt }
+                    }
+                }
+            }
+        };
 
-        var text = response.Text();
+        var json = JsonSerializer.Serialize(payload);
 
-        // try parse JSON safely
+        using var http = new HttpClient();
+
+        var response = await http.PostAsync(
+            $"https://generativelanguage.googleapis.com/v1/models/gemini-2.5-flash:generateContent?key={apiKey}",
+            new StringContent(json, Encoding.UTF8, "application/json"));
+
+        var respText = await response.Content.ReadAsStringAsync();
+
+        if (!response.IsSuccessStatusCode)
+            return Results.Problem(respText);
+
+        using var doc = JsonDocument.Parse(respText);
+
+        // extract text from Gemini response
+        var text = doc.RootElement
+            .GetProperty("candidates")[0]
+            .GetProperty("content")
+            .GetProperty("parts")[0]
+            .GetProperty("text")
+            .GetString();
+
+        if (string.IsNullOrWhiteSpace(text))
+            return Results.Problem("Empty Gemini response");
+
+        // ⭐ remove markdown fences
+        text = text
+            .Replace("```json", "", StringComparison.OrdinalIgnoreCase)
+            .Replace("```", "")
+            .Trim();
+
+        // ⭐ extract JSON object if extra commentary exists
+        var match = Regex.Match(text, @"\{[\s\S]*\}");
+        if (match.Success)
+            text = match.Value;
+
         try
         {
             var parsed = JsonSerializer.Deserialize<object>(text);
             return Results.Ok(parsed);
         }
-        catch
+        catch (Exception ex)
         {
-            // fallback if Gemini adds extra text
             return Results.Ok(new
             {
+                parseError = ex.Message,
                 raw = text
             });
         }
     }
+    private static async Task<IResult> EstimateDealValueHandler(TranscriptRequest req){
+        if (string.IsNullOrWhiteSpace(req.Transcript))
+            return Results.BadRequest("Transcript required");
 
-    private static IResult EstimateDealValueHandler()
+        var config = new ConfigurationBuilder()
+            .AddJsonFile("appsettings.json")
+            .Build();
+
+        var apiKey = config["Gemini:ApiKey"];
+
+        var prompt = $$"""
+    You are a B2B SaaS deal valuation expert.
+
+    Based ONLY on the transcript, estimate potential deal value.
+
+    If price signals are weak, infer a reasonable range from company size, urgency, and pain.
+
+    Return ONLY raw JSON:
+
     {
-        return Results.StatusCode(StatusCodes.Status501NotImplemented);
+    "estimated_value_usd": number,
+    "value_range": "low-high",
+    "confidence": 0-1,
+    "signals_used": []
+    }
+
+    Transcript:
+    {{req.Transcript}}
+    """;
+
+        var payload = new
+        {
+            contents = new[]
+            {
+                new
+                {
+                    parts = new[]
+                    {
+                        new { text = prompt }
+                    }
+                }
+            }
+        };
+
+        var json = JsonSerializer.Serialize(payload);
+
+        using var http = new HttpClient();
+
+        var response = await http.PostAsync(
+            $"https://generativelanguage.googleapis.com/v1/models/gemini-2.5-flash:generateContent?key={apiKey}",
+            new StringContent(json, Encoding.UTF8, "application/json"));
+
+        var respText = await response.Content.ReadAsStringAsync();
+
+        if (!response.IsSuccessStatusCode)
+            return Results.Problem(respText);
+
+        using var doc = JsonDocument.Parse(respText);
+
+        var text = doc.RootElement
+            .GetProperty("candidates")[0]
+            .GetProperty("content")
+            .GetProperty("parts")[0]
+            .GetProperty("text")
+            .GetString();
+
+        // ⭐ clean LLM output (same as transcript handler)
+        text = text?
+            .Replace("```json", "", StringComparison.OrdinalIgnoreCase)
+            .Replace("```", "")
+            .Trim();
+
+        var match = Regex.Match(text ?? "", @"\{[\s\S]*\}");
+        if (match.Success)
+            text = match.Value;
+
+        try
+        {
+            var parsed = JsonSerializer.Deserialize<object>(text!);
+            return Results.Ok(parsed);
+        }
+        catch
+        {
+            return Results.Ok(new { raw = text });
+        }
     }
 
     // Recommendations
