@@ -144,22 +144,22 @@ public static class AiRoutes{
         if (lead == null) return Results.NotFound("Lead not found");
 
         var prompt = $$"""
-    You are an SDR writing a follow-up message after a customer interaction.
+            You are an SDR writing a follow-up message after a customer interaction.
 
-    Return ONLY JSON:
+            Return ONLY JSON:
 
-    {
-    "message": ""
-    }
+            {
+            "message": ""
+            }
 
-    Lead:
-    Name: {{lead.Name}}
-    Company: {{lead.Company}}
+            Lead:
+            Name: {{lead.Name}}
+            Company: {{lead.Company}}
 
-    Interaction:
-    Summary: {{interaction.Summary}}
-    Transcript: {{interaction.Transcript}}
-    """;
+            Interaction:
+            Summary: {{interaction.Summary}}
+            Transcript: {{interaction.Transcript}}
+        """;
 
         var result = await CallGeminiAsync(prompt);
         return Results.Ok(result);

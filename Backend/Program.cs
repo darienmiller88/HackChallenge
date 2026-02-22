@@ -34,7 +34,8 @@ builder.Services.AddCors(options =>
     options.AddPolicy(corsOrigin,
         policy =>
         {
-            policy.AllowAnyOrigin()
+            policy.WithOrigins("http://localhost:3001",
+                                "http://localhost:3000")
                   .AllowAnyHeader()
                   .AllowAnyMethod();
         });
@@ -49,6 +50,7 @@ builder.Services.AddScoped<InteractionRepository>();
 
 var app = builder.Build();
 
+app.UseCors(corsOrigin);
 app.Use(async (context, next) =>
 {
     Stopwatch stopwatch = Stopwatch.StartNew();
@@ -58,7 +60,6 @@ app.Use(async (context, next) =>
     Console.WriteLine($"Request: {context.Request.Method} {context.Response.StatusCode} {context.Request.Path} {stopwatch.ElapsedMilliseconds}ms");
 });
 
-app.UseCors(corsOrigin);
 
 
 app.MapGet("/", () => "Hello World!");
