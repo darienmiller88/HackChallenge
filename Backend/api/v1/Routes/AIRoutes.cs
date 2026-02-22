@@ -49,21 +49,127 @@ public static class AiRoutes{
     }
 
     // Outreach drafting
-    private static IResult DraftColdEmailHandler()
-    {
-        return Results.StatusCode(StatusCodes.Status501NotImplemented);
+    private static async Task<object> CallGeminiAsync(string prompt){
+        var apiKey = Environment.GetEnvironmentVariable("GEMINI_API_KEY");
+
+        var payload = new
+        {
+            contents = new[]
+            {
+                new
+                {
+                    parts = new[] { new { text = prompt } }
+                }
+            }
+        };
+
+        using var http = new HttpClient();
+
+        var response = await http.PostAsync(
+            $"https://generativelanguage.googleapis.com/v1/models/gemini-2.5-flash:generateContent?key={apiKey}",
+            new StringContent(JsonSerializer.Serialize(payload), Encoding.UTF8, "application/json"));
+
+        var respText = await response.Content.ReadAsStringAsync();
+
+        if (!response.IsSuccessStatusCode)
+            throw new Exception(respText);
+
+        using var doc = JsonDocument.Parse(respText);
+
+        var text = doc.RootElement
+            .GetProperty("candidates")[0]
+            .GetProperty("content")
+            .GetProperty("parts")[0]
+            .GetProperty("text")
+            .GetString();
+
+        text = text?
+            .Replace("```json", "", StringComparison.OrdinalIgnoreCase)
+            .Replace("```", "")
+            .Trim();
+
+        var match = Regex.Match(text ?? "", @"\{[\s\S]*\}");
+        if (match.Success) text = match.Value;
+
+        return JsonSerializer.Deserialize<object>(text!);
     }
 
-    private static IResult DraftLinkedInMessageHandler()
+    private static async Task<IResult> DraftColdEmailHandler(int leadId, LeadRepository leadRepo){
+        var lead = await leadRepo.GetLeadById(leadId);
+        if (lead == null) return Results.NotFound();
+
+        var prompt = $$"""
+    You are a B2B SDR.
+
+    Write a short personalized cold email.
+
+    Return ONLY JSON:
+
     {
-        return Results.StatusCode(StatusCodes.Status501NotImplemented);
+    "subject": "",
+    "body": ""
     }
 
-    private static IResult DraftFollowUpHandler()
-    {
-        return Results.StatusCode(StatusCodes.Status501NotImplemented);
+    Lead:
+    Name: {{lead.Name}}
+    Company: {{lead.Company}}
+    """;
+
+        var result = await CallGeminiAsync(prompt);
+        return Results.Ok(result);
     }
 
+    private static async Task<IResult> DraftLinkedInMessageHandler(int leadId, LeadRepository leadRepo){
+        var lead = await leadRepo.GetLeadById(leadId);
+        if (lead == null) return Results.NotFound();
+
+        var prompt = $$"""
+    You are an SDR writing a concise LinkedIn DM.
+
+    Return ONLY JSON:
+
+    {
+    "message": ""
+    }
+
+    Lead:
+    Name: {{lead.Name}}
+    Company: {{lead.Company}}
+    """;
+
+        var result = await CallGeminiAsync(prompt);
+        return Results.Ok(result);
+    }
+    
+    private static async Task<IResult> DraftFollowUpHandler(int interactionId, int leadId, InteractionRepository interactionRepo, LeadRepository leadRepo){
+        var interaction = interactionRepo.GetById(interactionId);
+        if (interaction == null) return Results.NotFound();
+
+        var lead = await leadRepo.GetLeadById(leadId);
+        if (lead == null) return Results.NotFound("Lead not found");
+
+        var prompt = $$"""
+    You are an SDR writing a follow-up message after a customer interaction.
+
+    Return ONLY JSON:
+
+    {
+    "message": ""
+    }
+
+    Lead:
+    Name: {{lead.Name}}
+    Company: {{lead.Company}}
+
+    Interaction:
+    Summary: {{interaction.Summary}}
+    Transcript: {{interaction.Transcript}}
+    """;
+
+        var result = await CallGeminiAsync(prompt);
+        return Results.Ok(result);
+    }
+    
     // Call / meeting analysis
     private static async Task<IResult> AnalyzeTranscriptHandler(TranscriptRequest req){
         if (string.IsNullOrWhiteSpace(req.Transcript))
@@ -242,11 +348,7 @@ public static class AiRoutes{
     }
 
     // Recommendations
-    private static async Task<IResult> RecommendNextActionsHandler(
-        int leadId,
-        LeadRepository leadRepo,
-        InteractionRepository interactionRepo)
-    {
+    private static async Task<IResult> RecommendNextActionsHandler(int leadId, LeadRepository leadRepo, InteractionRepository interactionRepo){
         var apiKey = Environment.GetEnvironmentVariable("GEMINI_API_KEY");
 
         // ⭐ get lead

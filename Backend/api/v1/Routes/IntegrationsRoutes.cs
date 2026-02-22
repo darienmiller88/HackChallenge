@@ -17,8 +17,8 @@ public static class IntegrationsRoutes
         integrations.MapPost("/twilio/voice/recording", TwilioRecordingWebhookHandler);
 
         // Trigger outbound reminders/calls (your app calls Twilio + ElevenLabs)
-        integrations.MapPost("/voice/reminder/{leadId:guid}", TriggerReminderCallHandler); // input: meeting/time/message
-        integrations.MapPost("/voice/voicemail-drop/{leadId:guid}", TriggerVoicemailDropHandler);
+        integrations.MapPost("/voice/reminder/{leadId:int}", TriggerReminderCallHandler); // input: meeting/time/message
+        integrations.MapPost("/voice/voicemail-drop/{leadId:int}", TriggerVoicemailDropHandler);
 
         // Email provider webhook (optional)
         integrations.MapPost("/email/webhook", EmailWebhookHandler); // open/click/bounce -> update interaction/deal signals
