@@ -10,6 +10,21 @@ Console.WriteLine("Started!");
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddSingleton<IDbConnection>(sp =>
+{
+    // Get the environment variable
+    var connString = Environment.GetEnvironmentVariable("SUPA_BASE_URI");
+
+    // Throw early if missing
+    if (string.IsNullOrWhiteSpace(connString))
+    {
+        throw new InvalidOperationException("Environment variable 'SUPA_BASE_URI' is not set.");
+    }
+
+    // Return a new PostgreSQL connection
+    return new NpgsqlConnection(connString);
+});
+
 var app = builder.Build();
 
 app.Use(async (context, next) =>
