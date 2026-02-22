@@ -7,7 +7,7 @@ using Npgsql;
 //Load .env as early as possible
 DotNetEnv.Env.Load();
 
-Console.WriteLine("Started!");
+Console.WriteLine("Started! more");
 
 var builder = WebApplication.CreateBuilder(args);
 var corsOrigin = "_myAllowSpecificOrigins";
