@@ -37,9 +37,11 @@ app.Use(async (context, next) =>
 });
 
 
+app.MapGet("/", () => "Hello World");
 app.MapAiRoutes();
 app.MapIntegrationRoutes();
 app.MapLeadRoutes();
+
 app.MapInteractionRoutes();
 app.MapDealRoutes();
 app.MapTasksRoutes();

@@ -9,19 +9,8 @@
   <ItemGroup>
     <PackageReference Include="Dapper" Version="2.1.66" />
     <PackageReference Include="DotNetEnv" Version="3.1.1" />
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
     <PackageReference Include="Google_GenerativeAI" Version="3.6.3" />
-=======
     <PackageReference Include="Microsoft.Data.SqlClient" Version="6.1.4" />
->>>>>>> 50d8344 (feat: added postgres sql connection)
-=======
-    <PackageReference Include="Google_GenerativeAI" Version="3.6.3" />
->>>>>>> a8887dc607bd78dfd48564d6e2700b7e5db86fbd
-=======
-    <PackageReference Include="Google_GenerativeAI" Version="3.6.3" />
->>>>>>> a8887dc607bd78dfd48564d6e2700b7e5db86fbd
     <PackageReference Include="Npgsql" Version="10.0.1" />
     <PackageReference Include="NSwag.AspNetCore" Version="14.6.3" />
   </ItemGroup>

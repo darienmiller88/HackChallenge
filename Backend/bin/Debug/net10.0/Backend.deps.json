@@ -10,15 +10,8 @@
         "dependencies": {
           "Dapper": "2.1.66",
           "DotNetEnv": "3.1.1",
-<<<<<<< HEAD
-<<<<<<< HEAD
+          "Google_GenerativeAI": "3.6.3",
           "Microsoft.Data.SqlClient": "6.1.4",
-=======
-          "Google_GenerativeAI": "3.6.3",
->>>>>>> a8887dc607bd78dfd48564d6e2700b7e5db86fbd
-=======
-          "Google_GenerativeAI": "3.6.3",
->>>>>>> a8887dc607bd78dfd48564d6e2700b7e5db86fbd
           "NSwag.AspNetCore": "14.6.3",
           "Npgsql": "10.0.1"
         },
@@ -71,8 +64,14 @@
           }
         }
       },
-<<<<<<< HEAD
-<<<<<<< HEAD
+      "Google_GenerativeAI/3.6.3": {
+        "runtime": {
+          "lib/net9.0/GenerativeAI.dll": {
+            "assemblyVersion": "3.6.3.0",
+            "fileVersion": "3.6.3.0"
+          }
+        }
+      },
       "Microsoft.Bcl.AsyncInterfaces/8.0.0": {
         "runtime": {
           "lib/netstandard2.1/Microsoft.Bcl.AsyncInterfaces.dll": {
@@ -266,18 +265,6 @@
           "lib/netstandard2.0/Microsoft.SqlServer.Server.dll": {
             "assemblyVersion": "1.0.0.0",
             "fileVersion": "1.0.0.0"
-=======
-=======
->>>>>>> a8887dc607bd78dfd48564d6e2700b7e5db86fbd
-      "Google_GenerativeAI/3.6.3": {
-        "runtime": {
-          "lib/net9.0/GenerativeAI.dll": {
-            "assemblyVersion": "3.6.3.0",
-            "fileVersion": "3.6.3.0"
-<<<<<<< HEAD
->>>>>>> a8887dc607bd78dfd48564d6e2700b7e5db86fbd
-=======
->>>>>>> a8887dc607bd78dfd48564d6e2700b7e5db86fbd
           }
         }
       },
@@ -536,8 +523,13 @@
       "path": "dotnetenv/3.1.1",
       "hashPath": "dotnetenv.3.1.1.nupkg.sha512"
     },
-<<<<<<< HEAD
-<<<<<<< HEAD
+    "Google_GenerativeAI/3.6.3": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-9jKh5XPfEKIVggiOPcJQJvzTTNHaLzdDkGIHHhmsPbIWPlzHJorBaCp+3SkLV3o76hevFTZLHnCyyz5rE0P85g==",
+      "path": "google_generativeai/3.6.3",
+      "hashPath": "google_generativeai.3.6.3.nupkg.sha512"
+    },
     "Microsoft.Bcl.AsyncInterfaces/8.0.0": {
       "type": "package",
       "serviceable": true,
@@ -621,19 +613,6 @@
       "sha512": "sha512-N4KeF3cpcm1PUHym1RmakkzfkEv3GRMyofVv40uXsQhCQeglr2OHNcUk2WOG51AKpGO8ynGpo9M/kFXSzghwug==",
       "path": "microsoft.sqlserver.server/1.0.0",
       "hashPath": "microsoft.sqlserver.server.1.0.0.nupkg.sha512"
-=======
-=======
->>>>>>> a8887dc607bd78dfd48564d6e2700b7e5db86fbd
-    "Google_GenerativeAI/3.6.3": {
-      "type": "package",
-      "serviceable": true,
-      "sha512": "sha512-9jKh5XPfEKIVggiOPcJQJvzTTNHaLzdDkGIHHhmsPbIWPlzHJorBaCp+3SkLV3o76hevFTZLHnCyyz5rE0P85g==",
-      "path": "google_generativeai/3.6.3",
-      "hashPath": "google_generativeai.3.6.3.nupkg.sha512"
-<<<<<<< HEAD
->>>>>>> a8887dc607bd78dfd48564d6e2700b7e5db86fbd
-=======
->>>>>>> a8887dc607bd78dfd48564d6e2700b7e5db86fbd
     },
     "Namotion.Reflection/3.4.3": {
       "type": "package",
