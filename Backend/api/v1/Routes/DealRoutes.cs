@@ -10,12 +10,12 @@ public static class DealRoutes
         var deals = app.MapGroup("/api/v1/deals");
 
         // GET
-        deals.MapGet("/", GetDealsHandler);                          // list deals (filter by stage, leadId, date range)
+        deals.MapGet("", GetDealsHandler);                          // list deals (filter by stage, leadId, date range)
         deals.MapGet("/{id:guid}", GetDealByIdHandler);             // deal details
         deals.MapGet("/by-lead/{leadId:guid}", GetDealsByLeadHandler);
 
         // POST
-        deals.MapPost("/", CreateDealHandler);                       // create deal for a lead
+        deals.MapPost("", CreateDealHandler);                       // create deal for a lead
 
         // PATCH
         deals.MapPatch("/{id:guid}", UpdateDealHandler);            // update stage/value/probability/nextActionDate

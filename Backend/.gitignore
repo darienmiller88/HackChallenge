@@ -1,19 +1,2 @@
 obj/
 .env
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-appsettings.json
-bin/
-=======
-Backend/appsettings.json
-Backend/bin/Debug/net10.0/appsettings.json
->>>>>>> a8887dc607bd78dfd48564d6e2700b7e5db86fbd
-=======
-Backend/appsettings.json
-Backend/bin/Debug/net10.0/appsettings.json
->>>>>>> a8887dc607bd78dfd48564d6e2700b7e5db86fbd
-=======
-Backend/appsettings.json
-Backend/bin/Debug/net10.0/appsettings.json
->>>>>>> a8887dc607bd78dfd48564d6e2700b7e5db86fbd
