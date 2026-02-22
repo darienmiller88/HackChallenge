@@ -34,7 +34,7 @@ public static class AiRoutes{
         ai.MapPost("/estimate/deal-value", EstimateDealValueHandler);// input: leadId + transcript/history -> output: value_estimate + probability
 
         // Recommendations
-        ai.MapGet("/recommend/next-actions/{leadId:long}", RecommendNextActionsHandler);
+        ai.MapGet("/recommend/next-actions/{leadId:int}", RecommendNextActionsHandler);
     }
 
     // Lead discovery / research

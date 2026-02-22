@@ -1,6 +1,8 @@
 // ----------------------------
-    // LEADS (CRUD + search + scoring)
-    // ----------------------------
+// LEADS (CRUD + search + scoring)
+// ----------------------------
+
+using Backend.Repositories;
 
 namespace api.v1.Routes;
 
@@ -28,9 +30,10 @@ public static class LeadsRoutes
         leads.MapDelete("/{id:guid}", DeleteLeadHandler);           // delete lead (or soft delete)
     }
 
-    private static IResult GetLeadsHandler()
+    private static async Task<IResult> GetLeadsHandler(LeadRepository repo)
     {
-        return Results.StatusCode(StatusCodes.Status501NotImplemented);
+        var leads = await repo.GetAllLeads();
+        return Results.Ok(leads);
     }
 
     private static IResult GetLeadByIdHandler(Guid id)

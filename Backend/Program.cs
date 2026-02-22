@@ -27,6 +27,7 @@ builder.Services.AddSingleton<IDbConnection>(sp =>
 });
 
 //inject repositories
+
 builder.Services.AddScoped<LeadRepository>();
 builder.Services.AddScoped<InteractionRepository>();
 
