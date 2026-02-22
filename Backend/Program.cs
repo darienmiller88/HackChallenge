@@ -7,10 +7,10 @@ using Npgsql;
 //Load .env as early as possible
 DotNetEnv.Env.Load();
 
-Console.WriteLine("Started!");
+Console.WriteLine("Started! more");
 
 var builder = WebApplication.CreateBuilder(args);
-var corsOrigin = "_myAllowSpecificOrigins";
+var corsOrigin = "AllowAll";
 
 
 builder.Services.AddSingleton<IDbConnection>(sp =>
@@ -31,14 +31,12 @@ builder.Services.AddSingleton<IDbConnection>(sp =>
 //Add cors for front end
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy(corsOrigin,
-        policy =>
-        {
-            policy.WithOrigins("http://localhost:3001",
-                                "http://localhost:3000")
-                  .AllowAnyHeader()
-                  .AllowAnyMethod();
-        });
+    options.AddPolicy("AllowAll", policy =>
+    {
+        policy.AllowAnyOrigin()
+                .AllowAnyHeader()
+                .AllowAnyMethod();
+    });
 });
 
 
@@ -46,10 +44,11 @@ builder.Services.AddCors(options =>
 
 builder.Services.AddScoped<LeadRepository>();
 builder.Services.AddScoped<InteractionRepository>();
+builder.Services.AddScoped<DealRepository>();
 
 var app = builder.Build();
 
-app.UseCors(corsOrigin);
+app.UseCors("AllowAll");
 app.Use(async (context, next) =>
 {
     Stopwatch stopwatch = Stopwatch.StartNew();
